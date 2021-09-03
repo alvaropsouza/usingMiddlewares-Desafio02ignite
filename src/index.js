@@ -10,19 +10,46 @@ app.use(cors());
 const users = [];
 
 function checksExistsUserAccount(request, response, next) {
-  // Complete aqui
+  const { username } = request.headers;
+  const user = users.find(user => user.username === username);
+
+  if(!user) {
+    return response.status(404);
+  }
+
+  request.user = user;
+  
+  return next()
 }
 
 function checksCreateTodosUserAvailability(request, response, next) {
-  // Complete aqui
+  const { user } = request;
+
+  const todos = user.todos;
+  const numberOfTodos = todos.length;
+  if(user.pro == false && numberOfTodos >= 10) {
+    return response.status(403).json({ error: "This account reached the maximum ammount of todos. Consider upgrading to pro!" });
+  }
+
+  return next();
 }
 
 function checksTodoExists(request, response, next) {
-  // Complete aqui
+  // Receber username do header
+  // receber id por parametro
+  // Validar usuário
+  // Validar se o id é uma uuid
+  // Validar se a id pertence a um todo do usuário informado
+
+  // Se tudo passar, o {todo e usuário} devem ser repassados para a request
+  // Chamar next()
 }
 
 function findUserById(request, response, next) {
-  // Complete aqui
+  // receber id por parametro de rota
+  // Buscar esse usuário pelo id passado
+  // Caso seja encontrado, repassar o user para o request.user
+  // Chamar função next
 }
 
 app.post('/users', (request, response) => {
