@@ -35,21 +35,35 @@ function checksCreateTodosUserAvailability(request, response, next) {
 }
 
 function checksTodoExists(request, response, next) {
-  // Receber username do header
-  // receber id por parametro
-  // Validar usuário
-  // Validar se o id é uma uuid
-  // Validar se a id pertence a um todo do usuário informado
+  const { username } = request.headers;
+  const { id } = request.params;
+  
+  const validUuid = validate(id);
+  const user = users.find(user => user.username === username);
 
-  // Se tudo passar, o {todo e usuário} devem ser repassados para a request
-  // Chamar next()
+  const userTodos = user.todos;
+
+  const todoValidId = userTodos.find(todo => todo.id = id);
+
+  if(!user || !validUuid || !todoValidId) {
+    return response.status(404);
+  }
+
+  request.user = user;
+  request.todo = todoValidId;
+
+  return next();
 }
 
 function findUserById(request, response, next) {
-  // receber id por parametro de rota
-  // Buscar esse usuário pelo id passado
-  // Caso seja encontrado, repassar o user para o request.user
-  // Chamar função next
+  const { id } = request.params;
+  const user = users.find(user => user.id === id);
+
+  if(!user) {
+    return response.status(404).json({ error: "Cannot find user." })
+  }
+  request.user = user;
+  return next()
 }
 
 app.post('/users', (request, response) => {
