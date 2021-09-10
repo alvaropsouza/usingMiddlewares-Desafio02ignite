@@ -40,8 +40,6 @@ function checksTodoExists(request, response, next) {
   
   const user = users.find(user => user.username === username);
   
-  const todo = user.todos.find(todo => todo.id === id);
-  
   const validUuid = validate(id);
 
   if(!user) {
@@ -50,12 +48,12 @@ function checksTodoExists(request, response, next) {
   else if(!validUuid) {
     return response.status(400).json({error: "Invalid ID."});
   }
-  else if(!todo) {
+  else if(!user.todos.some(todo => todo.id = id)) {
     return response.status(404).json({error: "Invalid todo."});
   }
 
   request.user = user;
-  request.todo = todo;
+  request.todo = user.todos.find(todo => todo.id === id);
 
   return next();
 }
