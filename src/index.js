@@ -11,7 +11,7 @@ const users = [];
 
 function checksExistsUserAccount(request, response, next) {
   const { username } = request.headers;
-  const user = users.find(user => user.username === username);
+  const user = users.find((user) => user.username === username);
 
   if(!user) {
     return response.status(404);
@@ -35,22 +35,27 @@ function checksCreateTodosUserAvailability(request, response, next) {
 }
 
 function checksTodoExists(request, response, next) {
-  const { username } = request.headers;
   const { id } = request.params;
+  const { username } = request.headers;
+  
+  const user = users.find(user => user.username === username);
+  
+  const todo = user.todos.find(todo => todo.id === id);
   
   const validUuid = validate(id);
-  const user = users.find(user => user.username === username);
 
-  const userTodos = user.todos;
-
-  const todoValidId = userTodos.find(todo => todo.id = id);
-
-  if(!user || !validUuid || !todoValidId) {
-    return response.status(404);
+  if(!user) {
+    return response.status(404).json({error: "Invalid user."});
+  }
+  else if(!validUuid) {
+    return response.status(400).json({error: "Invalid ID."});
+  }
+  else if(!todo) {
+    return response.status(404).json({error: "Invalid todo."});
   }
 
   request.user = user;
-  request.todo = todoValidId;
+  request.todo = todo;
 
   return next();
 }
